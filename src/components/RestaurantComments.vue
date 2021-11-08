@@ -7,6 +7,7 @@
         <button
           type="button"
           v-if="currentUser.isAdmin"
+          @click.stop.prevent="handleDeleteButtonClick(comment.id)"
           class="btn btn-danger float-right"
         >
           Delete
@@ -48,6 +49,11 @@ export default {
     return {
       currentUser: dummyUser.currentUser,
     };
+  },
+  methods: {
+    handleDeleteButtonClick(commentId) {
+      this.$emit("after-delete-comment", commentId);
+    },
   },
   mixins: [fromNowFilter],
   // filters: {
