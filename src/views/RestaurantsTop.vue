@@ -13,9 +13,11 @@
     >
       <div class="row no-gutters">
         <div class="col-md-4">
-          <a href="#">
+          <router-link
+            :to="{ name: 'restaurant', params: { id: restaurant.id } }"
+          >
             <img class="card-img" :src="restaurant.image" />
-          </a>
+          </router-link>
         </div>
         <div class="col-md-8">
           <div class="card-body">
@@ -240,10 +242,13 @@ export default {
   },
   data() {
     return {
-      restaurantsTop: dummyData.restaurants,
+      restaurantsTop: [],
     };
   },
   methods: {
+    fetchRestaurantsTop() {
+      this.restaurantsTop = dummyData.restaurants;
+    },
     addFavorited(restaurantId) {
       for (let i = 0; i < this.restaurantsTop.length; i++) {
         if (this.restaurantsTop[i].id === restaurantId) {
@@ -260,6 +265,9 @@ export default {
         }
       }
     },
+  },
+  created() {
+    this.fetchRestaurantsTop();
   },
 };
 </script>
