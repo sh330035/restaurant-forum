@@ -1,8 +1,6 @@
 <template>
   <div class="card">
-    <div class="card-header">
-      最新評論
-    </div>
+    <div class="card-header">最新評論</div>
     <div class="card-body">
       <div v-for="comment in comments" :key="comment.id">
         <h4>
@@ -10,34 +8,28 @@
             {{ comment.Restaurant.name }}
           </a>
         </h4>
-        <p>{{ comment.text }}</p>by
+        <p>{{ comment.text }}</p>
+        by
         <a href="#">
           {{ comment.User.name }}
         </a>
         {{ comment.createdAt | fromNow }}
-        <hr>
+        <hr />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import moment from "moment"
+import { fromNowFilter } from "../utils/mixins";
 
 export default {
-  props:{
-    comments:{
+  props: {
+    comments: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
-  filters:{
-    fromNow(datetime){
-      if(!datetime){
-        return "--"
-      }
-      return moment(datetime).fromNow()
-    }
-  }
-}
+  mixins: [fromNowFilter],
+};
 </script>
