@@ -19,17 +19,29 @@
       <div class="row">
         <div class="col-md-4">
           <!-- UserFollowingsCard -->
-          <UserFollowingCard />
+          <UserFollowingCard
+            :followings="followings"
+            :followings-count="followingsCount"
+          />
           <br />
           <!-- UserFollowersCard -->
-          <UserFollowersCard />
+          <UserFollowersCard
+            :followers="followers"
+            :followers-count="followersCount"
+          />
         </div>
         <div class="col-md-8">
           <!-- UserCommentsCard -->
-          <UserCommentsCard />
+          <UserCommentsCard
+            :comments="comments"
+            :comments-count="commentsCount"
+          />
           <br />
           <!-- UserFavoritedRestaurantsCard -->
-          <UserFavoritedRestaurantsCard />
+          <UserFavoritedRestaurantsCard
+            :favorited-restaurants="favoritedRestaurants"
+            :favorited-restaurants-count="favoritedRestaurantsCount"
+          />
         </div>
       </div>
     </div>
@@ -1302,7 +1314,7 @@ const dummyData = {
 };
 const dummyUser = {
   currentUser: {
-    id: 2,
+    id: 1,
     name: "管理者",
     email: "root@example.com",
     image: "https://i.pravatar.cc/300",
@@ -1333,7 +1345,7 @@ export default {
       favoritedRestaurantsCount: -1,
       followers: [],
       followersCount: -1,
-      followerings: [],
+      followings: [],
       followingsCount: -1,
       currentUser: dummyUser.currentUser,
     };
@@ -1352,7 +1364,7 @@ export default {
         dummyData.profile.FavoritedRestaurants.length;
       this.followers = dummyData.profile.Followers;
       this.followersCount = dummyData.profile.Followers.length;
-      this.followerings = dummyData.profile.Followings;
+      this.followings = dummyData.profile.Followings;
       this.followingsCount = dummyData.profile.Followings.length;
     },
     afterSwitchFollowing() {

@@ -168,6 +168,7 @@ export default {
       const { restaurantId, commentId, text } = payload;
       this.restaurantComments.push({
         id: commentId,
+        UserId: this.currentUser.id,
         text,
         RestaurantId: restaurantId,
         User: {

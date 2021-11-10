@@ -13,7 +13,9 @@
           Delete
         </button>
         <h3>
-          <a href="#">{{ comment.User.name }}</a>
+          <router-link :to="{ name: 'user', params: { id: comment.UserId } }">
+            {{ comment.User.name }}
+          </router-link>
         </h3>
         <p>{{ comment.text }}</p>
         <footer class="blockquote-footer">
