@@ -116,7 +116,8 @@ export default {
     };
   },
   methods: {
-    fetchRestaurantDashboard() {
+    fetchRestaurantDashboard(restaurantId) {
+      console.log(restaurantId);
       this.restaurant = {
         id: dummyData.restaurant.id,
         name: dummyData.restaurant.name,
@@ -127,7 +128,8 @@ export default {
     },
   },
   created() {
-    this.fetchRestaurantDashboard();
+    const { id: restaurantId } = this.$route.params;
+    this.fetchRestaurantDashboard(restaurantId);
   },
 };
 </script>

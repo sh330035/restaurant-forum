@@ -18,7 +18,11 @@
     <div id="navbarSupportedContent" class="navbar-collapse collapse">
       <div class="ml-auto d-flex align-items-center">
         <!-- is user is admin -->
-        <router-link to="#" class="text-white mr-3" v-if="currentUser.isAdmin">
+        <router-link
+          to="/admin/restaurants"
+          class="text-white mr-3"
+          v-if="currentUser.isAdmin"
+        >
           管理員後台
         </router-link>
 
