@@ -1,6 +1,10 @@
 // ./src/views/AdminRestaurantNew.vue
 <template>
   <div class="container py-5">
+    <button type="button" class="btn btn-link" @click="$router.back()">
+      回上一頁
+    </button>
+    <hr />
     <!-- 餐廳表單 AdminRestaurantForm -->
     <AdminRestaurantForm @after-submit="handleAfterSubmit" />
   </div>
