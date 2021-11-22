@@ -68,47 +68,43 @@ export default {
     };
   },
   methods: {
-    handleSubmit() {
-      this.isProcessing = true;
-      // 若帳號密碼為空值，直接 return + Toast，不用進到後端驗證
-      if (!this.email || !this.password) {
-        Toast.fire({
-          icon: "warning",
-          title: "請輸入帳號與密碼",
-        });
-        return;
-      }
-
-      authorizationAPI
-        .signIn({
-          email: this.email,
-          password: this.password,
-        })
-        .then((response) => {
-          // promise
-          const { data } = response;
-
-          if (data.status !== "success") {
-            // 丟出錯誤訊息，進到 catch 中
-            throw new Error(data.message);
-          }
-
-          localStorage.setItem("token", data.token);
-
-          this.$router.push("/restaurants"); /*轉址*/
-        })
-        .catch((error) => {
-          // 清空密碼
-          this.isProcessing = false;
-          this.password = "";
-          // 警示訊息
+    async handleSubmit() {
+      try {
+        if (!this.email || !this.password) {
           Toast.fire({
             icon: "warning",
-            title: "帳號或密碼錯誤",
+            title: "請輸入帳號與密碼",
           });
+          return;
+        }
+        // 若帳號密碼為空值，直接 return + Toast，不用進到後端驗證
+        this.isProcessing = true;
 
-          console.log(error);
+        const response = await authorizationAPI.signIn({
+          email: this.email,
+          password: this.password,
         });
+
+        const { data } = response;
+
+        if (data.status !== "success") {
+          // 丟出錯誤訊息，進到 catch 中
+          throw new Error(data.message);
+        }
+
+        localStorage.setItem("token", data.token);
+
+        this.$router.push("/restaurants"); /*轉址*/
+      } catch (error) {
+        // 清空密碼
+        this.isProcessing = false;
+        this.password = "";
+        // 警示訊息
+        Toast.fire({
+          icon: "warning",
+          title: "帳號或密碼錯誤",
+        });
+      }
     },
   },
 };
