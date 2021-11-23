@@ -42,12 +42,11 @@ export default {
   methods: {
     async fetchFeeds() {
       try {
-        const response = await feedsAPI.getFeeds();
-        const { restaurants, comments } = response.data;
+        const { data } = await feedsAPI.getFeeds();
+        const { restaurants, comments } = data;
 
         this.restaurants = restaurants;
         this.comments = comments;
-        console.log(response);
       } catch (error) {
         console.log("error", error);
         Toast.fire({

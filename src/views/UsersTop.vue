@@ -38,50 +38,8 @@
 
 <script>
 import NavTabs from "../components/NavTabs.vue";
-
-const dammyData = {
-  users: [
-    {
-      id: 1,
-      name: "root",
-      email: "root@example.com",
-      password: "$2a$10$UvMcSKrgRN4dyz6og7gpveO6jE4JjZeTO/UcoR92KBr8llL45vEIa",
-      isAdmin: true,
-      image: "http://via.placeholder.com/300x300?text=No+Image",
-      createdAt: "2021-11-03T15:01:36.000Z",
-      updatedAt: "2021-11-03T15:01:36.000Z",
-      Followers: [],
-      FollowerCount: 0,
-      isFollowed: false,
-    },
-    {
-      id: 2,
-      name: "user1",
-      email: "user1@example.com",
-      password: "$2a$10$zMr3omqXDS8O64UOiGcwuu8IFs50zPRvzrXOkJMdm4lXEc8feWVT.",
-      isAdmin: false,
-      image: null,
-      createdAt: "2021-11-03T15:01:36.000Z",
-      updatedAt: "2021-11-03T15:01:36.000Z",
-      Followers: [],
-      FollowerCount: 0,
-      isFollowed: false,
-    },
-    {
-      id: 3,
-      name: "user2",
-      email: "user2@example.com",
-      password: "$2a$10$GIxolQfpf9TjjTIi.XojP..kn.hBu5GjRhlUuv6Hey7yqNKyZbLhG",
-      isAdmin: false,
-      image: null,
-      createdAt: "2021-11-03T15:01:36.000Z",
-      updatedAt: "2021-11-03T15:01:36.000Z",
-      Followers: [],
-      FollowerCount: 0,
-      isFollowed: false,
-    },
-  ],
-};
+import usersAPI from "../apis/users";
+import { Toast } from "../utils/helpers";
 
 export default {
   name: "users",
@@ -94,23 +52,66 @@ export default {
     };
   },
   methods: {
-    fetchUsers() {
-      this.users = dammyData.users;
-    },
-    addFollowed(id) {
-      for (let i = 0; i < this.users.length; i++) {
-        if (this.users[i].id === id) {
-          this.users[i].isFollowed = true;
-          return;
-        }
+    async fetchUsers() {
+      try {
+        const { data } = await usersAPI.getTopUsers();
+        console.log(data);
+        this.users = data.users;
+      } catch (error) {
+        console.log("error", error);
+        Toast.fire({
+          icon: "error",
+          title: "資料無法匯入，請稍後再試",
+        });
       }
     },
-    deleteFollowed(id) {
-      for (let i = 0; i < this.users.length; i++) {
-        if (this.users[i].id === id) {
-          this.users[i].isFollowed = false;
-          return;
+    async addFollowed(userId) {
+      try {
+        const { data } = await usersAPI.addFollowing({ userId });
+
+        // console.log("data", data);
+        if (data.status !== "success") {
+          throw new Error(data.message);
         }
+        // 用 map 將符合按鈕之 user id 者，改變狀態
+        this.users = this.users.map((user) => {
+          if (user.id !== userId) {
+            return user;
+          } else {
+            return {
+              ...user,
+              followerCount: user.followerCount + 1,
+              isFollowed: true,
+            };
+          }
+        });
+      } catch (error) {
+        console.log("error", error);
+        Toast.fire({
+          icon: "error",
+          title: "無法加入追蹤，請稍後再試",
+        });
+      }
+    },
+    async deleteFollowed(userId) {
+      try {
+        const { data } = await usersAPI.deleteFollowing({ userId });
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+        this.users = this.users.map((user) => {
+          if (user.id !== userId) {
+            return user;
+          } else {
+            return {
+              ...user,
+              followerCount: user.followerCount - 1,
+              isFollowed: false,
+            };
+          }
+        });
+      } catch (error) {
+        console.log(error);
       }
     },
   },
