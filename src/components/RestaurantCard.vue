@@ -84,7 +84,6 @@ export default {
         // 直接將 response 的 data 取出
         const { data } = await usersAPI.addFavorite({ restaurantID });
         // 若請求過程有錯，則進到錯誤處理
-        console.log(usersAPI.addFavorite({ restaurantID }));
         if (data.status !== "success") {
           throw new Error(data.message);
         }
