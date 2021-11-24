@@ -7,6 +7,7 @@
     <hr />
     <AdminRestaurantForm
       :initial-restaurant="restaurant"
+      :is-processing="isProcessing"
       @after-submit="handleAfterSubmit"
     />
   </div>
@@ -14,27 +15,8 @@
 
 <script>
 import AdminRestaurantForm from "../components/AdminRestaurantForm.vue";
-const dummyData = {
-  restaurant: {
-    id: 2,
-    name: "Mrs. Mckenzie Johnston",
-    tel: "567-714-6131 x621",
-    address: "61371 Rosalinda Knoll",
-    opening_hours: "08:00",
-    description:
-      "Quia pariatur perferendis architecto tenetur omnis pariatur tempore.",
-    image: "https://loremflickr.com/320/240/food,dessert,restaurant/?random=2",
-    createdAt: "2019-06-22T09:00:43.000Z",
-    updatedAt: "2019-06-22T09:00:43.000Z",
-    CategoryId: 3,
-    Category: {
-      id: 3,
-      name: "義大利料理",
-      createdAt: "2019-06-22T09:00:43.000Z",
-      updatedAt: "2019-06-22T09:00:43.000Z",
-    },
-  },
-};
+import adminAPI from "../apis/admin";
+import { Toast } from "../utils/helpers";
 
 export default {
   name: "AdminRestaurantEdit",
@@ -53,45 +35,76 @@ export default {
         image: "",
         categoryId: "",
       },
+      isProcessing: false,
     };
-  },
-  methods: {
-    fetchRestaurantData(restaurantID) {
-      console.log("fetchRestaurant id:", restaurantID);
-      const { restaurant } = dummyData;
-      const {
-        id,
-        name,
-        tel,
-        address,
-        opening_hours: openingHours,
-        description,
-        image,
-        CategoryId: categoryId,
-      } = restaurant;
-      this.restaurant = {
-        id,
-        name,
-        tel,
-        address,
-        openingHours,
-        description,
-        image,
-        categoryId,
-      };
-    },
-    handleAfterSubmit(formData, restaurantID) {
-      // 展開來傳
-      for (let [name, value] of formData.entries()) {
-        console.log(name + "： " + value);
-      }
-      // 自動跳回CMS首頁
-      this.$router.push({ name: "admin-restaurant", id: restaurantID });
-    },
   },
   created() {
     const { id } = this.$route.params;
     this.fetchRestaurantData(id);
+  },
+  beforeRouteUpdate(to, next) {
+    const { id } = to.params;
+    this.fetchRestaurantData(id);
+    next();
+  },
+  methods: {
+    async fetchRestaurantData(restaurantId) {
+      try {
+        console.log("fetchRestaurant id:", restaurantId);
+        const { data } = await adminAPI.restaurants.getDetail({ restaurantId });
+
+        const {
+          id,
+          name,
+          tel,
+          address,
+          opening_hours: openingHours,
+          description,
+          image,
+          CategoryId: categoryId,
+        } = data.restaurant;
+
+        this.restaurant = {
+          id,
+          name,
+          tel,
+          address,
+          openingHours,
+          description,
+          image,
+          categoryId,
+        };
+      } catch (error) {
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法取得資料，請稍後再試",
+        });
+      }
+    },
+    async handleAfterSubmit(formData) {
+      try {
+        this.isProcessing = true;
+        const { data } = await adminAPI.restaurants.update({
+          restaurantId: this.restaurant.id,
+          formData,
+        });
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+
+        // 自動跳回CMS首頁
+        this.$router.push({ name: "admin-restaurants" });
+      } catch (error) {
+        this.isProcessing = false;
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法送出資料，請稍後再試",
+        });
+      }
+    },
   },
 };
 </script>
