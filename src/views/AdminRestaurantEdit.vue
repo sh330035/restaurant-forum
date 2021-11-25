@@ -42,10 +42,9 @@ export default {
     const { id } = this.$route.params;
     this.fetchRestaurantData(id);
   },
-  beforeRouteUpdate(to, next) {
+  beforeRouteUpdate(to) {
     const { id } = to.params;
     this.fetchRestaurantData(id);
-    next();
   },
   methods: {
     async fetchRestaurantData(restaurantId) {
