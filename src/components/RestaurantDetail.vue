@@ -87,6 +87,15 @@ export default {
       restaurant: this.initRestaurant,
     };
   },
+  // 監看資料變化，重新更新畫面
+  watch: {
+    initRestaurant(newValue) {
+      this.restaurant = {
+        ...this.restaurant,
+        ...newValue,
+      };
+    },
+  },
   methods: {
     addFavorited() {
       this.restaurant.isFavorited = true;
