@@ -110,8 +110,26 @@ const router = new VueRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
-  store.dispatch('fetchCurrentUser')
+router.beforeEach(async (to, from, next) => {
+  // 取出 token
+  const token = localStorage.getItem('token')
+  // 預設驗證為 false
+  let isAuthenticated = false
+
+  if (token) {
+    isAuthenticated = await store.dispatch('fetchCurrentUser')
+  }
+
+  // 改寫 將兩個 path 寫在一起，放進 if 中
+  const pathWithoutAuthenticated = ['sign-in', 'sign-up']
+
+  if (!isAuthenticated && !pathWithoutAuthenticated.includes(to.name)) {
+    next('/signin')
+    return
+  } else if (isAuthenticated && pathWithoutAuthenticated.includes(to.name)) {
+    next('/restaurants')
+    return
+  }
   next()
 })
 
