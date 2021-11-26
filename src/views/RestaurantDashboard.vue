@@ -21,88 +21,9 @@
 </template>
 
 <script>
-const dummyData = {
-  restaurant: {
-    id: 1,
-    name: "Ms. Victor Hane",
-    tel: "374.151.0927 x63501",
-    address: "3820 Robel Rapid",
-    opening_hours: "08:00",
-    description:
-      "Aut aliquam distinctio inventore architecto eius et labore. Doloribus non praesentium officiis fugit magni ex ipsum recusandae. Voluptatem aliquam accusantium. Voluptate eos dicta debitis. Vel et tenetur eveniet voluptate tenetur perspiciatis enim.",
-    image:
-      "https://loremflickr.com/320/240/restaurant,food/?random=41.13090251119787",
-    viewCounts: 1,
-    createdAt: "2021-11-03T15:01:36.000Z",
-    updatedAt: "2021-11-08T02:06:40.000Z",
-    CategoryId: 3,
-    Category: {
-      id: 3,
-      name: "義大利料理",
-      createdAt: "2021-11-03T15:01:36.000Z",
-      updatedAt: "2021-11-03T15:01:36.000Z",
-    },
-    Comments: [
-      {
-        id: 1,
-        text: "Magnam corporis blanditiis qui.",
-        UserId: 2,
-        RestaurantId: 1,
-        createdAt: "2021-11-03T15:01:36.000Z",
-        updatedAt: "2021-11-03T15:01:36.000Z",
-        User: {
-          id: 2,
-          name: "user1",
-          email: "user1@example.com",
-          password:
-            "$2a$10$zMr3omqXDS8O64UOiGcwuu8IFs50zPRvzrXOkJMdm4lXEc8feWVT.",
-          isAdmin: false,
-          image: null,
-          createdAt: "2021-11-03T15:01:36.000Z",
-          updatedAt: "2021-11-03T15:01:36.000Z",
-        },
-      },
-      {
-        id: 101,
-        text: "Sint fugit odio est blanditiis corrupti.",
-        UserId: 2,
-        RestaurantId: 1,
-        createdAt: "2021-11-03T15:01:36.000Z",
-        updatedAt: "2021-11-03T15:01:36.000Z",
-        User: {
-          id: 2,
-          name: "user1",
-          email: "user1@example.com",
-          password:
-            "$2a$10$zMr3omqXDS8O64UOiGcwuu8IFs50zPRvzrXOkJMdm4lXEc8feWVT.",
-          isAdmin: false,
-          image: null,
-          createdAt: "2021-11-03T15:01:36.000Z",
-          updatedAt: "2021-11-03T15:01:36.000Z",
-        },
-      },
-      {
-        id: 51,
-        text: "Officiis doloribus quia.",
-        UserId: 3,
-        RestaurantId: 1,
-        createdAt: "2021-11-03T15:01:36.000Z",
-        updatedAt: "2021-11-03T15:01:36.000Z",
-        User: {
-          id: 3,
-          name: "user2",
-          email: "user2@example.com",
-          password:
-            "$2a$10$GIxolQfpf9TjjTIi.XojP..kn.hBu5GjRhlUuv6Hey7yqNKyZbLhG",
-          isAdmin: false,
-          image: null,
-          createdAt: "2021-11-03T15:01:36.000Z",
-          updatedAt: "2021-11-03T15:01:36.000Z",
-        },
-      },
-    ],
-  },
-};
+import restaurantsAPI from "../apis/restaurants";
+import { Toast } from "../utils/helpers";
+
 export default {
   data() {
     return {
@@ -116,15 +37,24 @@ export default {
     };
   },
   methods: {
-    fetchRestaurantDashboard(restaurantId) {
-      console.log(restaurantId);
-      this.restaurant = {
-        id: dummyData.restaurant.id,
-        name: dummyData.restaurant.name,
-        categoryName: dummyData.restaurant.Category.name,
-        commentsLength: dummyData.restaurant.Comments.length,
-        viewCounts: dummyData.restaurant.viewCounts,
-      };
+    async fetchRestaurantDashboard(restaurantId) {
+      try {
+        const { data } = await restaurantsAPI.getRestaurant({ restaurantId });
+
+        this.restaurant = {
+          id: data.restaurant.id,
+          name: data.restaurant.name,
+          categoryName: data.restaurant.Category.name,
+          commentsLength: data.restaurant.Comments.length,
+          viewCounts: data.restaurant.viewCounts,
+        };
+      } catch (error) {
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法匯入餐廳資料，請稍後再試",
+        });
+      }
     },
   },
   created() {

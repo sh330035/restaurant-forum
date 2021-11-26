@@ -49,11 +49,6 @@ export default {
     const { id } = to.params;
     this.fetchRestaurant(id);
   },
-  // watch: {
-  //   reRender() {
-  //     this.restaurantComments.length;
-  //   },
-  // },
   methods: {
     async fetchRestaurant(restaurantId) {
       try {

@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div class="card-header">
-      <strong>{{ followingsCount }}</strong> followings (追蹤者)
+      <strong>{{ followingsCount }}</strong> followings (已追蹤)
     </div>
     <div class="card-body">
       <router-link

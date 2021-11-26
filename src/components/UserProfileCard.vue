@@ -16,7 +16,7 @@
               <strong>{{ favoritedRestaurantsCount }}</strong> 收藏的餐廳
             </li>
             <li>
-              <strong>{{ followingsCount }}</strong> followings (追蹤者)
+              <strong>{{ followingsCount }}</strong> followings (已追蹤)
             </li>
             <li>
               <strong>{{ followersCount }}</strong> followers (追隨者)
@@ -33,7 +33,7 @@
             <button
               type="submit"
               v-else-if="currentUser.id != userId && isFollowed"
-              @click.stop.prevent="switchFollowing"
+              @click.stop.prevent="deleteFollowed(userId)"
               class="btn btn-danger"
             >
               取消追蹤
@@ -41,7 +41,7 @@
             <button
               type="submit"
               v-else
-              @click.stop.prevent="switchFollowing"
+              @click.stop.prevent="addFollowed(userId)"
               class="btn btn-primary"
             >
               追蹤
@@ -96,8 +96,11 @@ export default {
     },
   },
   methods: {
-    switchFollowing() {
-      this.$emit("after-switch-following");
+    addFollowed(userId) {
+      this.$emit("after-add-followed", userId);
+    },
+    deleteFollowed(userId) {
+      this.$emit("after-delete-followed", userId);
     },
   },
 };

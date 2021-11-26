@@ -80,7 +80,7 @@ export default {
           } else {
             return {
               ...user,
-              followerCount: user.followerCount + 1,
+              FollowerCount: user.FollowerCount + 1,
               isFollowed: true,
             };
           }
@@ -105,7 +105,7 @@ export default {
           } else {
             return {
               ...user,
-              followerCount: user.followerCount - 1,
+              FollowerCount: user.FollowerCount - 1,
               isFollowed: false,
             };
           }
