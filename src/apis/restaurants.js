@@ -25,10 +25,10 @@ export default {
     })
   },
   comments: {
-    createComment({ commentText }) {
+    createComment({ comment }) {
       return apiHelper.post(
         '/comments',
-        { commentText },
+        { ...comment },
         {
           headers: { Authorization: `Bearer ${getToken()}` }
         }

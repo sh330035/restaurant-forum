@@ -49,6 +49,11 @@ export default {
     const { id } = to.params;
     this.fetchRestaurant(id);
   },
+  // watch: {
+  //   reRender() {
+  //     this.restaurantComments.length;
+  //   },
+  // },
   methods: {
     async fetchRestaurant(restaurantId) {
       try {
@@ -96,20 +101,42 @@ export default {
         });
       }
     },
-    afterCreateComment(payload) {
-      console.log(payload);
-      const { restaurantId, commentId, text } = payload;
-      this.restaurantComments.push({
-        id: commentId,
-        UserId: this.currentUser.id,
-        text,
-        RestaurantId: restaurantId,
-        User: {
-          id: this.currentUser.id,
-          name: this.currentUser.name,
-        },
-        createdAt: new Date(),
-      });
+    async afterCreateComment(payload) {
+      if (!payload.text) {
+        Toast.fire({
+          icon: "warning",
+          title: "請輸入評論內容",
+        });
+        return;
+      }
+      try {
+        const comment = {
+          UserId: this.currentUser.id,
+          text: payload.text,
+          restaurantId: payload.restaurantId,
+          User: {
+            id: this.currentUser.id,
+            name: this.currentUser.name,
+          },
+          createdAt: new Date(),
+        };
+
+        const { data } = await restaurantsAPI.comments.createComment({
+          comment,
+        });
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+
+        this.fetchRestaurant(this.restaurant.id);
+      } catch (error) {
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法新增評論資料，請稍後再試",
+        });
+      }
     },
   },
   computed: {

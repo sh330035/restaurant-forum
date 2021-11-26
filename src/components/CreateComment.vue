@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { v4 as uuidv4 } from "uuid";
+// import { v4 as uuidv4 } from "uuid";
 
 export default {
   props: {
@@ -35,7 +35,7 @@ export default {
       // 伺服器新增comment後
 
       this.$emit("after-create-comment", {
-        commentId: uuidv4(), //暫時使用uuid，連結伺服器後再更改
+        // commentId: uuidv4(), //暫時使用uuid，連結伺服器後再更改
         restaurantId: this.restaurantId,
         text: this.text,
       });
