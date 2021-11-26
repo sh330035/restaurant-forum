@@ -34,23 +34,19 @@
         />
       </div>
 
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <button type="submit" class="btn btn-primary" :disabled="isProcessing">
+        Submit
+      </button>
     </form>
   </div>
 </template>
 
 <script>
 import { emptyImageFilter } from "../utils/mixins";
-const dummyUser = {
-  currentUser: {
-    id: 1,
-    name: "管理者",
-    email: "root@example.com",
-    image: "https://i.pravatar.cc/300",
-    isAdmin: true,
-  },
-  isAuthenticated: true,
-};
+import { mapState } from "vuex";
+import usersAPI from "../apis/users";
+import { Toast } from "../utils/helpers";
+
 export default {
   name: "userEdit",
   mixins: [emptyImageFilter],
@@ -62,12 +58,22 @@ export default {
         email: "",
         image: "",
       },
+      isProcessing: false,
     };
   },
+  // Q：要監聽的話 id 怎麼取? 一般使用狀況應該不會有這個問題?
+  // watch: {
+  //   currentUser: function () {
+  //     this.setUser(id);
+  //   },
+  //   deep: true,
+  // },
   methods: {
-    fetchUser(userId) {
-      console.log("fetch user id: ", userId);
-      const user = dummyUser.currentUser;
+    setUser(id) {
+      if (id != this.currentUser.id) {
+        this.$router.push("Not-Found");
+      }
+      const user = this.currentUser;
       this.user = {
         ...this.user,
         id: user.id,
@@ -87,20 +93,41 @@ export default {
         this.user.image = imageURL;
       }
     },
-    handleSubmit(e) {
-      // 提取資料
-      const form = e.target;
-      const formData = new FormData(form);
-      // 展開送出之表單資料
-      for (let [name, value] of formData.entries()) {
-        console.log(name, value);
+    async handleSubmit(e) {
+      try {
+        if (!this.user.name) {
+          Toast.fire({
+            icon: "warning",
+            title: "請輸入正確名稱",
+          });
+          return;
+        }
+        this.isProcessing = true;
+        // 提取資料
+        const form = e.target;
+        const formData = new FormData(form);
+        const { id } = this.$route.params;
+        // 展開送出之表單資料
+        const { data } = await usersAPI.update({ userId: id, formData });
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+
+        this.$router.push({ name: "user", params: { id: this.user.id } });
+      } catch (error) {
+        console.log(error);
+        Toast.fire({ icon: "error", title: "無法修改用戶資料，請稍後再試" });
+        this.isProcessing = false;
       }
-      this.$router.push({ name: "user", params: { id: this.user.id } });
     },
   },
   created() {
     const { id } = this.$route.params;
-    this.fetchUser(id);
+    this.setUser(id);
+  },
+  computed: {
+    ...mapState(["currentUser"]),
   },
 };
 </script>
