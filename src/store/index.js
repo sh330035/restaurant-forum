@@ -25,6 +25,12 @@ export default new Vuex.Store({
         ...currentUser
       }
       state.isAuthenticated = true
+    },
+    // 登出功能 清空、認證改回 false、移除 token
+    revokeAuthentication(state) {
+      state.currentUser = {}
+      state.isAuthenticated = false
+      localStorage.removeItem('token')
     }
   },
   // 透過 Api 請求資料
