@@ -19,7 +19,7 @@
           <td>
             <button
               type="button"
-              @click.stop.prevent="toggleIsAdmin(user.id)"
+              @click.stop.prevent="toggleIsAdmin(user.id, user.isAdmin)"
               v-if="!user.isAdmin"
               class="btn btn-link"
             >
@@ -27,7 +27,7 @@
             </button>
             <button
               type="button"
-              @click.stop.prevent="toggleIsAdmin(user.id)"
+              @click.stop.prevent="toggleIsAdmin(user.id, user.isAdmin)"
               v-if="user.isAdmin && user.name !== 'root'"
               class="btn btn-link"
             >
@@ -42,50 +42,9 @@
 
 <script>
 import AdminNav from "../components/AdminNav.vue";
-
-const dummyData = {
-  users: [
-    {
-      id: 1,
-      name: "root",
-      email: "root@example.com",
-      password: "$2a$10$UvMcSKrgRN4dyz6og7gpveO6jE4JjZeTO/UcoR92KBr8llL45vEIa",
-      isAdmin: true,
-      image: "http://via.placeholder.com/300x300?text=No+Image",
-      createdAt: "2021-11-03T15:01:36.000Z",
-      updatedAt: "2021-11-03T15:01:36.000Z",
-      Followers: [],
-      FollowerCount: 0,
-      isFollowed: false,
-    },
-    {
-      id: 2,
-      name: "user1",
-      email: "user1@example.com",
-      password: "$2a$10$zMr3omqXDS8O64UOiGcwuu8IFs50zPRvzrXOkJMdm4lXEc8feWVT.",
-      isAdmin: false,
-      image: null,
-      createdAt: "2021-11-03T15:01:36.000Z",
-      updatedAt: "2021-11-03T15:01:36.000Z",
-      Followers: [],
-      FollowerCount: 0,
-      isFollowed: false,
-    },
-    {
-      id: 3,
-      name: "user2",
-      email: "user2@example.com",
-      password: "$2a$10$GIxolQfpf9TjjTIi.XojP..kn.hBu5GjRhlUuv6Hey7yqNKyZbLhG",
-      isAdmin: false,
-      image: null,
-      createdAt: "2021-11-03T15:01:36.000Z",
-      updatedAt: "2021-11-03T15:01:36.000Z",
-      Followers: [],
-      FollowerCount: 0,
-      isFollowed: false,
-    },
-  ],
-};
+import adminAPI from "../apis/admin";
+import { Toast } from "../utils/helpers";
+import { mapState } from "vuex";
 
 export default {
   name: "AdminUsers",
@@ -98,21 +57,48 @@ export default {
     };
   },
   methods: {
-    fetchUsers() {
-      this.users = dummyData.users;
+    async fetchUsers() {
+      try {
+        const { data } = await adminAPI.users.get();
+        this.users = data.users;
+      } catch (error) {
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法取得用戶資料，請稍後再試",
+        });
+      }
     },
-    toggleIsAdmin(userId) {
-      console.log(userId);
-      this.users = this.users.map((user) => {
-        if (user.id === userId) {
-          return {
-            ...user,
-            isAdmin: !user.isAdmin,
-          };
-        } else {
-          return user;
+    async toggleIsAdmin(userId, isAdmin) {
+      try {
+        const { data } = await adminAPI.users.toggleRole({
+          userId,
+          // api 僅吃字串檔案
+          isAdmin: (!isAdmin).toString(),
+        });
+
+        if (data.status !== "success") {
+          throw new Error(data.message);
         }
-      });
+
+        // 前端畫面變更
+        this.users = this.users.map((user) => {
+          if (user.id === userId) {
+            return {
+              ...user,
+              isAdmin: !user.isAdmin,
+            };
+          } else {
+            return user;
+          }
+        });
+      } catch (error) {
+        console.log(error);
+        Toast.fire({
+          icon: "error",
+          title: "無法變更用戶權限，請稍後再試",
+        });
+      }
     },
   },
   filters: {
@@ -126,6 +112,9 @@ export default {
   },
   created() {
     this.fetchUsers();
+  },
+  computed: {
+    ...mapState(["currentUser"]),
   },
 };
 </script>
