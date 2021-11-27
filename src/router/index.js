@@ -7,6 +7,15 @@ import store from '../store'
 
 Vue.use(VueRouter)
 
+const authorizeIsAdmin = (to, from, next) => {
+  const currentUser = store.state.currentUser
+  if (currentUser && !currentUser.isAdmin) {
+    next('/404')
+    return
+  }
+  next()
+}
+
 const routes = [
   {
     path: '/',
@@ -46,32 +55,38 @@ const routes = [
   {
     path: '/admin/restaurants',
     name: 'admin-restaurants',
-    component: () => import('../views/AdminRestaurants')
+    component: () => import('../views/AdminRestaurants'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '/admin/restaurants/new',
     name: 'admin-restaurant-new',
-    component: () => import('../views/AdminRestaurantNew')
+    component: () => import('../views/AdminRestaurantNew'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '/admin/restaurants/:id/edit',
     name: 'admin-restaurant-edit',
-    component: () => import('../views/AdminRestaurantEdit')
+    component: () => import('../views/AdminRestaurantEdit'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '/admin/restaurants/:id',
     name: 'admin-restaurant',
-    component: () => import('../views/AdminRestaurant')
+    component: () => import('../views/AdminRestaurant'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '/admin/categories',
     name: 'admin-categories',
-    component: () => import('../views/AdminCategories')
+    component: () => import('../views/AdminCategories'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '/admin/users',
     name: 'admin-users',
-    component: () => import('../views/AdminUsers')
+    component: () => import('../views/AdminUsers'),
+    beforeEnter: authorizeIsAdmin
   },
   {
     path: '/users/top',
@@ -113,10 +128,12 @@ const router = new VueRouter({
 router.beforeEach(async (to, from, next) => {
   // 取出 token
   const token = localStorage.getItem('token')
-  // 預設驗證為 false
-  let isAuthenticated = false
+  const tokenInStore = store.state.token
+  // 預設驗證改為從 store 取出
+  let isAuthenticated = store.state.isAuthenticated
 
-  if (token) {
+  // 有 token 且 token 與 store 的不同才需要驗證
+  if (tokenInStore && token !== tokenInStore) {
     isAuthenticated = await store.dispatch('fetchCurrentUser')
   }
 
