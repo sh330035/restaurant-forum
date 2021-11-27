@@ -2,22 +2,22 @@
   <div id="restaurant-forum">
     <Navbar />
     <main class="mt-5 bg-white">
-      <router-view/>
+      <router-view />
     </main>
   </div>
 </template>
 
 <script>
-import "bootstrap"
-import "bootstrap/dist/css/bootstrap.min.css"
-import Navbar from "./components/Navbar.vue"
+import "bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import Navbar from "./components/Navbar.vue";
 
 export default {
-  name:"App",
-  components:{
-    Navbar
-  }
-}
+  name: "App",
+  components: {
+    Navbar,
+  },
+};
 </script>
 
 <style>
@@ -40,5 +40,9 @@ export default {
 
 #nav a.router-link-exact-active {
   color: #42b983;
+}
+
+main {
+  margin-top: 65px !important;
 }
 </style>

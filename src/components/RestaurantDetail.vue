@@ -181,7 +181,10 @@ export default {
 </script>
 
 <style scoped>
-.mr-2 {
-  margin-right: 5px;
+.col-lg-8 p,
+.contact-info-wrap li,
+.contact-info-wrap strong {
+  font-family: serif;
+  font-size: 17px;
 }
 </style>

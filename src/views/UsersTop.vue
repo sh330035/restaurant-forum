@@ -55,7 +55,6 @@ export default {
     async fetchUsers() {
       try {
         const { data } = await usersAPI.getTopUsers();
-        console.log(data);
         this.users = data.users;
       } catch (error) {
         console.log("error", error);

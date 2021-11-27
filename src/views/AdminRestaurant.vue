@@ -89,6 +89,8 @@ export default {
           CategoryId: categoryId,
         } = data.restaurant;
 
+        const { name: categoryName } = data.restaurant.Category;
+
         this.restaurant = {
           id,
           name,
@@ -98,6 +100,7 @@ export default {
           description,
           image,
           categoryId,
+          categoryName,
         };
       } catch (error) {
         console.log(error);
