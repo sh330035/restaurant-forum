@@ -104,8 +104,6 @@ export default {
         // 沒辦法用 Data 抓錯誤 message
         const { data } = await usersAPI.get({ userId });
 
-        console.log(data.status);
-
         this.userId = data.profile.id;
         this.name = data.profile.name;
         this.email = data.profile.email;

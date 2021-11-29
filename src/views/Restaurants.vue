@@ -14,6 +14,9 @@
           :initial-restaurant="restaurant"
         />
       </div>
+      <div v-if="restaurants.length < 1">
+        <h3>此餐廳類別無資料</h3>
+      </div>
 
       <!-- 分頁標籤 Pagination -->
       <RestaurantsPagination
