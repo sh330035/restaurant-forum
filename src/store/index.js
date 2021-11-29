@@ -20,6 +20,7 @@ export default new Vuex.Store({
   // 用來修改 state 的方法
   mutations: {
     setCurrentUser(state, currentUser) {
+      console.log('setCurrentUser')
       state.currentUser = {
         ...state.currentUser,
         // 透過api取得的 current user
@@ -42,6 +43,7 @@ export default new Vuex.Store({
   actions: {
     async fetchCurrentUser({ commit }) {
       try {
+        console.log('fetchCurrentUser')
         const { data } = await usersAPI.getCurrentUser()
 
         if (data.status == 'error') {

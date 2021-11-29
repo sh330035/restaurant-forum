@@ -7,6 +7,7 @@ import store from '../store'
 
 Vue.use(VueRouter)
 
+// 避免非管理者進入管理者頁面
 const authorizeIsAdmin = (to, from, next) => {
   const currentUser = store.state.currentUser
   if (currentUser && !currentUser.isAdmin) {
@@ -127,13 +128,13 @@ const router = new VueRouter({
 
 router.beforeEach(async (to, from, next) => {
   // 取出 token
-  const token = localStorage.getItem('token')
+  const tokenStorage = localStorage.getItem('token')
   const tokenInStore = store.state.token
   // 預設驗證改為從 store 取出
   let isAuthenticated = store.state.isAuthenticated
 
-  // 有 token 且 token 與 store 的不同才需要驗證
-  if (tokenInStore && token !== tokenInStore) {
+  // local storage 有 token 且 token 與 store 的不同才需要驗證
+  if (tokenStorage && tokenStorage !== tokenInStore) {
     isAuthenticated = await store.dispatch('fetchCurrentUser')
   }
 
