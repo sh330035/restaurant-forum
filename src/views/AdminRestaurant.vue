@@ -1,6 +1,7 @@
 // ./src/views/AdminRestaurant.vue
 <template>
-  <div class="container py-5">
+  <Spinner v-if="isLoading" />
+  <div class="container py-5" v-else>
     <div class="row">
       <div class="col-md-12">
         <h1>{{ restaurant.name }}</h1>
@@ -43,6 +44,7 @@
 </template>
 
 <script>
+import Spinner from "../components/Spinner.vue";
 import { emptyImageFilter } from "../utils/mixins";
 import adminAPI from "../apis/admin";
 import { Toast } from "../utils/helpers";
@@ -50,6 +52,9 @@ import { Toast } from "../utils/helpers";
 export default {
   name: "AdminRestaurant",
   mixins: [emptyImageFilter],
+  components: {
+    Spinner,
+  },
   data() {
     return {
       restaurant: {
@@ -62,6 +67,7 @@ export default {
         tel: "",
         address: "",
       },
+      isLoading: true,
     };
   },
   beforeRouteUpdate(to) {
@@ -75,6 +81,7 @@ export default {
   methods: {
     async fetchRestaurant(restaurantId) {
       try {
+        this.isLoading = true;
         const { data } = await adminAPI.restaurants.getDetail({
           restaurantId,
         });
@@ -102,7 +109,9 @@ export default {
           categoryId,
           categoryName,
         };
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         console.log(error);
         Toast.fire({
           icon: "error",

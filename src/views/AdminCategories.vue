@@ -26,74 +26,81 @@
       </div>
     </form>
     <table class="table">
-      <thead class="thead-dark">
-        <tr>
-          <th scope="col" width="60">#</th>
-          <th scope="col">Category Name</th>
-          <th scope="col" width="210">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="category in categories" :key="category.id">
-          <th scope="row">
-            {{ category.id }}
-          </th>
-          <td class="position-relative">
-            <div
-              v-show="!category.isEditing"
-              @click.stop.prevent="toggleIsEditing(category.id)"
-              class="category-name"
-            >
-              {{ category.name }}
-            </div>
-            <input
-              v-model="category.name"
-              v-show="category.isEditing"
-              type="text"
-              class="form-control"
-            />
-            <span
-              v-show="category.isEditing"
-              @click.stop.prevent="handleCancel(category.id)"
-              class="cancel"
-              >✕</span
-            >
-          </td>
-          <td class="d-flex justify-content-between">
-            <button
-              type="button"
-              v-show="!category.isEditing"
-              @click.stop.prevent="toggleIsEditing(category.id)"
-              class="btn btn-link mr-2"
-            >
-              Edit
-            </button>
-            <button
-              type="button"
-              v-show="category.isEditing"
-              @click.stop.prevent="
-                updateCategory({ categoryId: category.id, name: category.name })
-              "
-              class="btn btn-link mr-2"
-            >
-              Save
-            </button>
-            <button
-              type="button"
-              @click.stop.prevent="deleteCategory(category.id)"
-              class="btn btn-link mr-2"
-            >
-              Delete
-            </button>
-          </td>
-        </tr>
-      </tbody>
+      <Spinner v-if="isLoading" />
+      <template v-else>
+        <thead class="thead-dark">
+          <tr>
+            <th scope="col" width="60">#</th>
+            <th scope="col">Category Name</th>
+            <th scope="col" width="210">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="category in categories" :key="category.id">
+            <th scope="row">
+              {{ category.id }}
+            </th>
+            <td class="position-relative">
+              <div
+                v-show="!category.isEditing"
+                @click.stop.prevent="toggleIsEditing(category.id)"
+                class="category-name"
+              >
+                {{ category.name }}
+              </div>
+              <input
+                v-model="category.name"
+                v-show="category.isEditing"
+                type="text"
+                class="form-control"
+              />
+              <span
+                v-show="category.isEditing"
+                @click.stop.prevent="handleCancel(category.id)"
+                class="cancel"
+                >✕</span
+              >
+            </td>
+            <td class="d-flex justify-content-between">
+              <button
+                type="button"
+                v-show="!category.isEditing"
+                @click.stop.prevent="toggleIsEditing(category.id)"
+                class="btn btn-link mr-2"
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                v-show="category.isEditing"
+                @click.stop.prevent="
+                  updateCategory({
+                    categoryId: category.id,
+                    name: category.name,
+                  })
+                "
+                class="btn btn-link mr-2"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                @click.stop.prevent="deleteCategory(category.id)"
+                class="btn btn-link mr-2"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </template>
     </table>
   </div>
 </template>
 
 <script>
 import AdminNav from "../components/AdminNav.vue";
+import Spinner from "../components/Spinner.vue";
 import adminAPI from "../apis/admin";
 import { Toast } from "../utils/helpers";
 
@@ -101,23 +108,28 @@ export default {
   name: "AdminCategories",
   components: {
     AdminNav,
+    Spinner,
   },
   data() {
     return {
       categories: [],
       newCategoryName: "",
+      isLoading: true,
     };
   },
   methods: {
     async fetchCategories() {
       try {
+        this.isLoading = true;
         const { data } = await adminAPI.categories.get();
         this.categories = data.categories.map((category) => ({
           ...category,
           nameCached: "",
           isEditing: false,
         }));
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         console.log(error);
         Toast.fire({
           icon: "error",

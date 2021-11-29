@@ -1,5 +1,6 @@
 <template>
-  <div class="album py-5 bg-light" v-show="!isLoading">
+  <Spinner v-if="isLoading" />
+  <div class="album py-5 bg-light" v-else>
     <div class="container">
       <!-- UserProfileCard -->
       <UserProfileCard
@@ -55,6 +56,7 @@ import UserFollowingCard from "../components/UserFollowingsCard.vue";
 import UserFollowersCard from "../components/UserFollowersCard";
 import UserCommentsCard from "../components/UserCommentsCard";
 import UserFavoritedRestaurantsCard from "../components/UserFavoritedRestaurantsCard";
+import Spinner from "../components/Spinner.vue";
 import usersAPI from "../apis/users";
 import { Toast } from "../utils/helpers";
 import { mapState } from "vuex";
@@ -67,6 +69,7 @@ export default {
     UserFollowersCard,
     UserCommentsCard,
     UserFavoritedRestaurantsCard,
+    Spinner,
   },
   data() {
     return {
@@ -96,9 +99,12 @@ export default {
   methods: {
     async fetchUserData(userId) {
       try {
+        this.isLoading = true;
         // 後端設定問題：傳入 userId 不存在時，不會跳錯誤訊息....
         // 沒辦法用 Data 抓錯誤 message
         const { data } = await usersAPI.get({ userId });
+
+        console.log(data.status);
 
         this.userId = data.profile.id;
         this.name = data.profile.name;
@@ -117,6 +123,7 @@ export default {
 
         this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         console.log(error);
         Toast.fire({
           icon: "error",

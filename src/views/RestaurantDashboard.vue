@@ -1,5 +1,6 @@
 <template>
-  <div class="container py-5">
+  <Spinner v-if="isLoading" />
+  <div class="container py-5" v-else>
     <div>
       <h1>{{ restaurant.name }}</h1>
       <span class="badge badge-secondary mt-1 mb-3 bg-black">
@@ -21,10 +22,14 @@
 </template>
 
 <script>
+import Spinner from "../components/Spinner.vue";
 import restaurantsAPI from "../apis/restaurants";
 import { Toast } from "../utils/helpers";
 
 export default {
+  components: {
+    Spinner,
+  },
   data() {
     return {
       restaurant: {
@@ -34,11 +39,13 @@ export default {
         commentsLength: -1,
         viewCounts: -1,
       },
+      isLoading: true,
     };
   },
   methods: {
     async fetchRestaurantDashboard(restaurantId) {
       try {
+        this.isLoading = true;
         const { data } = await restaurantsAPI.getRestaurant({ restaurantId });
 
         this.restaurant = {
@@ -48,7 +55,9 @@ export default {
           commentsLength: data.restaurant.Comments.length,
           viewCounts: data.restaurant.viewCounts,
         };
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         console.log(error);
         Toast.fire({
           icon: "error",

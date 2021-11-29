@@ -1,6 +1,7 @@
 // ./src/views/Restaurant.vue
 <template>
-  <div class="container py-5">
+  <Spinner v-if="isLoading" />
+  <div class="container py-5" v-else>
     <!-- 餐廳資訊頁 RestaurantDetail -->
     <RestaurantDetail :init-restaurant="restaurant" />
     <hr />
@@ -21,12 +22,13 @@
 import RestaurantDetail from "../components/RestaurantDetail.vue";
 import RestaurantComments from "../components/RestaurantComments.vue";
 import CreateComment from "../components/CreateComment.vue";
+import Spinner from "../components/Spinner.vue";
 import restaurantsAPI from "../apis/restaurants";
 import { Toast } from "../utils/helpers";
 import { mapState } from "vuex";
 
 export default {
-  components: { RestaurantDetail, RestaurantComments, CreateComment },
+  components: { RestaurantDetail, RestaurantComments, CreateComment, Spinner },
   name: "restaurant",
   data() {
     return {
@@ -43,6 +45,7 @@ export default {
         isLiked: false,
       },
       restaurantComments: [],
+      isLoading: true,
     };
   },
   beforeRouteUpdate(to) {
@@ -52,6 +55,7 @@ export default {
   methods: {
     async fetchRestaurant(restaurantId) {
       try {
+        this.isLoading = true;
         const { data } = await restaurantsAPI.getRestaurant({ restaurantId });
         this.restaurant = {
           id: data.restaurant.id,
@@ -67,7 +71,9 @@ export default {
         };
 
         this.restaurantComments = data.restaurant.Comments;
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         console.log(error);
         Toast.fire({
           icon: "error",
