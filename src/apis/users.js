@@ -8,7 +8,6 @@ export default {
     return apiHelper.get(`/users/${userId}`)
   },
   update({ userId, formData }) {
-    console.log('users Update')
     return apiHelper.put(`/users/${userId}`, formData)
   },
   addFavorite({ restaurantID }) {

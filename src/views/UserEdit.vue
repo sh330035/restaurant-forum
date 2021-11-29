@@ -46,6 +46,7 @@ import { emptyImageFilter } from "../utils/mixins";
 import { mapState } from "vuex";
 import usersAPI from "../apis/users";
 import { Toast } from "../utils/helpers";
+import store from "../store";
 
 export default {
   name: "userEdit",
@@ -109,7 +110,7 @@ export default {
         const { id } = this.$route.params;
         // 展開送出之表單資料
         const { data } = await usersAPI.update({ userId: id, formData });
-
+        store.dispatch("fetchCurrentUser");
         if (data.status !== "success") {
           throw new Error(data.message);
         }
